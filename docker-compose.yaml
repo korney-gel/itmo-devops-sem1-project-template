@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: validator
       POSTGRES_PASSWORD: val1dat0r
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 

@@ -3,3 +3,4 @@
 
 # Игнорирование настроек IDE JetBrains (.idea)
 .idea/
+server.pid
