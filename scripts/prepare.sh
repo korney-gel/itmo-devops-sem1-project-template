@@ -9,7 +9,7 @@ echo "[prepare.sh] Проверяем, что контейнер с БД зап�
 docker compose up -d
 
 echo "[prepare.sh] Создаём таблицу prices (если не существует)..."
-docker compose exec db \
+docker-compose exec db \
   psql -U validator -d project-sem-1 -c \
   "CREATE TABLE IF NOT EXISTS prices (
     product_id TEXT,
