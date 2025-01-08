@@ -24,3 +24,6 @@ echo "[run.sh] Сервер готов. PID: $SERVER_PID"
 
 # Сохраняем PID процесса в файл, чтобы можно было завершить сервер позже
 echo $SERVER_PID > server.pid
+
+echo "[run.sh] Проверяем доступность сервера..."
+curl -v http://localhost:8080/api/v0/prices || echo "Сервер недоступен"

@@ -53,7 +53,10 @@ func main() {
 
 	// Роуты
 	http.HandleFunc("/api/v0/prices", func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Запрос на /api/v0/prices: метод=%s", r.Method)
+		log.Printf("POST /api/v0/prices: получен запрос")
+		log.Printf("Заголовки запроса: %v", r.Header)
+		log.Printf("Тип содержимого: %s", r.Header.Get("Content-Type"))
+		log.Printf("Метод: %s, URL: %s", r.Method, r.URL.String())
 		switch r.Method {
 		case http.MethodPost:
 			handlePostPrices(w, r, db)
@@ -74,8 +77,10 @@ func main() {
 // Обработчик POST /api/v0/prices — загружает zip, парсит CSV, сохраняет в БД
 func handlePostPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
-	log.Printf("Заголовки запроса: %v", r.Header)
-	log.Printf("Тип содержимого: %s", r.Header.Get("Content-Type"))
+	log.Printf("Получен запрос на POST /api/v0/prices")
+	log.Printf("Метод: %s, URL: %s", r.Method, r.URL.String())
+	log.Printf("Хост: %s, User-Agent: %s", r.Host, r.Header.Get("User-Agent"))
+	log.Printf("Заголовки: %v", r.Header)
 
 	// Принимаем zip-архив из тела запроса
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
