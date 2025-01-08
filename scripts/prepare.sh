@@ -19,7 +19,7 @@ echo "База данных готова."
 echo "[prepare.sh] Создаём таблицу prices (если не существует)..."
 docker compose exec db \
   psql -U validator -d project-sem-1 -c \
-  "CREATE TABLE IF NOT EXISTS prices (
+  "CREATE TABLE IF NOT EXISTS public.prices (
     product_id TEXT,
     created_at DATE,
     product_name TEXT,

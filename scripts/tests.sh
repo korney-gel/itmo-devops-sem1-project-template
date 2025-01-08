@@ -55,11 +55,11 @@ check_api_simple() {
 
     # Проверка таблицы prices перед тестами
     echo "[tests.sh] Проверяем таблицу prices..."
-    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c '\d prices'
-    if [ $? -eq 0 ]; then
-        echo "[tests.sh] Таблица prices существует."
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c '\d prices' #td: add to log
+    if [ $? -eq 0 ]; then #td: add to log
+        echo "[tests.sh] Таблица prices существует."#td: add to log
     else
-        echo "[tests.sh] Таблица prices отсутствует или её структура некорректна."
+        echo "[tests.sh] Таблица prices отсутствует или её структура некорректна."#td: add to log
         exit 1
     fi
     
