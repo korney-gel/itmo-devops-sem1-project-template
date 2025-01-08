@@ -73,8 +73,13 @@ func main() {
 
 // Обработчик POST /api/v0/prices — загружает zip, парсит CSV, сохраняет в БД
 func handlePostPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+
+	log.Printf("Заголовки запроса: %v", r.Header)
+	log.Printf("Тип содержимого: %s", r.Header.Get("Content-Type"))
+
 	// Принимаем zip-архив из тела запроса
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		log.Printf("Ошибка парсинга запроса: %v", err)
 		http.Error(w, "Ошибка парсинга запроса", http.StatusBadRequest)
 		return
 	}
