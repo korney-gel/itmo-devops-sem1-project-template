@@ -27,4 +27,7 @@ docker compose exec db \
     price NUMERIC
 );"
 
+echo "[prepare.sh] Завершаем транзакцию..."
+PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c 'COMMIT;'
+
 echo "[prepare.sh] Скрипт подготовки завершён."
