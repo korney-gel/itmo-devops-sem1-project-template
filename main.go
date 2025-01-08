@@ -33,6 +33,9 @@ type ImportResponse struct {
 
 func main() {
 	// Подключаемся к БД
+	log.Printf("Подключаемся к базе данных: хост=%s, порт=%s, имя БД=%s, пользователь=%s",
+		dbHost, dbPort, dbName, dbUser)
+
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		dbHost, dbPort, dbUser, dbPassword, dbName)
 	db, err := sql.Open("postgres", connStr)
@@ -46,20 +49,25 @@ func main() {
 		log.Fatalf("БД не отвечает: %v", err)
 	}
 
+	log.Println("Подключение к БД успешно")
+
 	// Роуты
 	http.HandleFunc("/api/v0/prices", func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Запрос на /api/v0/prices: метод=%s", r.Method)
 		switch r.Method {
 		case http.MethodPost:
 			handlePostPrices(w, r, db)
 		case http.MethodGet:
 			handleGetPrices(w, r, db)
 		default:
+			log.Printf("Метод не поддерживается: %s", r.Method)
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
 	// Запуск сервера
 	fmt.Println("Сервер слушает порт 8080...")
+	log.Println("Сервер слушает на порту 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
