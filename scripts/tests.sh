@@ -55,7 +55,17 @@ check_api_simple() {
     
     # Проверка POST /api/v0/prices
     echo "Тестирование POST /api/v0/prices"
+
+    echo "Отправляем запрос на: ${API_HOST}/api/v0/prices" #td: add to log
+    echo "Отправляем файл: $TEST_ZIP" #td: add to log
+
     response=$(curl -s -F "file=@$TEST_ZIP" "${API_HOST}/api/v0/prices")
+
+    http_code=$(echo "$response" | grep "HTTP_CODE" | sed 's/HTTP_CODE://') #td: add to log
+    echo "Ответ сервера:" #td: add to log
+    echo "$response" | sed 's/HTTP_CODE:.*//' #td: add to log
+
+
     if [[ $response == *"total_items"* && $response == *"total_categories"* && $response == *"total_price"* ]]; then
         echo -e "${GREEN}✓ POST запрос успешен${NC}"
         
