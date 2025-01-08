@@ -8,7 +8,7 @@ echo "[run.sh] Запускаем Go-приложение..."
 cd "$(dirname "$0")/.."
 
 # Проверка подключения к базе данных
-echo "[run.sh] Проверяем подключение к базе данных..."
+echo "[run.sh] Проверяем подключение к базе данных...."
 PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c '\q'
 if [ $? -eq 0 ]; then
   echo "[run.sh] Подключение к базе данных успешно."
