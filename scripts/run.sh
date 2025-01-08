@@ -7,6 +7,26 @@ echo "[run.sh] Запускаем Go-приложение..."
 # Переход в корневую директорию проекта
 cd "$(dirname "$0")/.."
 
+# Проверка подключения к базе данных
+echo "[run.sh] Проверяем подключение к базе данных..."
+PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c '\q'
+if [ $? -eq 0 ]; then
+  echo "[run.sh] Подключение к базе данных успешно."
+else
+  echo "[run.sh] Ошибка подключения к базе данных."
+  exit 1
+fi
+
+# Проверка структуры таблицы prices
+echo "[run.sh] Проверяем структуру таблицы prices..."
+PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c '\d prices'
+if [ $? -eq 0 ]; then
+  echo "[run.sh] Таблица prices существует."
+else
+  echo "[run.sh] Таблица prices отсутствует или её структура некорректна."
+  exit 1
+fi
+
 # Запускаем сервер в фоновом режиме
 go run main.go &
 

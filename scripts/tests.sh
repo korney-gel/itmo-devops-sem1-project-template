@@ -52,6 +52,16 @@ check_api_simple() {
     create_test_files 1
 
     echo -e "\nПроверка API (простой уровень)"
+
+    # Проверка таблицы prices перед тестами
+    echo "[tests.sh] Проверяем таблицу prices..."
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c '\d prices'
+    if [ $? -eq 0 ]; then
+        echo "[tests.sh] Таблица prices существует."
+    else
+        echo "[tests.sh] Таблица prices отсутствует или её структура некорректна."
+        exit 1
+    fi
     
     # Проверка POST /api/v0/prices
     echo "Тестирование POST /api/v0/prices"
