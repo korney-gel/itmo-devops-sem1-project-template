@@ -30,6 +30,23 @@ else
   exit 1
 fi
 
+# Проверяем подключение к базе данных
+echo "[run.sh] Проверяем подключение к базе данных..."
+PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c '\q'
+echo "[run.sh] Подключение к базе данных успешно."
+
+# Создаём таблицу, если она не существует
+echo "[run.sh] Создаём таблицу prices (если не существует)..."
+PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
+CREATE TABLE IF NOT EXISTS prices (
+    product_id TEXT,
+    created_at DATE,
+    product_name TEXT,
+    category TEXT,
+    price NUMERIC
+);"
+echo "[run.sh] Таблица prices создана (если не существовала)."
+
 # Запускаем сервер в фоновом режиме
 go run main.go &
 
