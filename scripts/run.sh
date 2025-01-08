@@ -17,7 +17,7 @@ else
   exit 1
 fi
 
-echo "[run.sh] Проверяем список таблиц в базе данных..."
+echo "[run.sh] Проверяем список таблиц в базе данных...."
 PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c '\dt *.*'
 
 # Проверка структуры таблицы prices
