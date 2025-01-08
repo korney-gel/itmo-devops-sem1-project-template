@@ -17,17 +17,15 @@ else
   exit 1
 fi
 
-echo "[run.sh] Проверяем список таблиц в базе данных...."
-PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c '\dt *.*'
 
 # Проверка структуры таблицы prices
-echo "[run.sh] Проверяем структуру таблицы prices..."
-PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c '\d prices'
-if [ $? -eq 0 ]; then
-  echo "[run.sh] Таблица prices существует."
-else
-  echo "[run.sh] Таблица prices отсутствует или её структура некорректна."
-fi
+#echo "[run.sh] Проверяем структуру таблицы prices..."
+#PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c '\d prices'
+#if [ $? -eq 0 ]; then
+#  echo "[run.sh] Таблица prices существует."
+#else
+#  echo "[run.sh] Таблица prices отсутствует или её структура некорректна."
+#fi
 
 # Проверяем подключение к базе данных
 echo "[run.sh] Проверяем подключение к базе данных..."
