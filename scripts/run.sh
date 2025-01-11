@@ -36,6 +36,7 @@ echo "[run.sh] Подключение к базе данных успешно."
 echo "[run.sh] Создаём таблицу prices (если не существует)..."
 PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
 CREATE TABLE IF NOT EXISTS prices (
+    id SERIAL PRIMARY KEY,
     product_id TEXT,
     created_at DATE,
     product_name TEXT,
