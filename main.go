@@ -11,7 +11,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 
 	_ "github.com/lib/pq" // драйвер PostgreSQL
@@ -112,8 +111,6 @@ func handlePostPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	var records [][]string
-	categoriesMap := make(map[string]bool)
-	totalPrice := 0.0
 
 	// Ищем data.csv в архиве
 	for _, zipFile := range zipReader.File {
@@ -150,14 +147,6 @@ func handlePostPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 					continue
 				}
 
-				price, err := strconv.ParseFloat(row[3], 64)
-				if err != nil {
-					http.Error(w, "Некорректный формат цены: "+row[3], http.StatusBadRequest)
-					return
-				}
-
-				totalPrice += price
-				categoriesMap[row[2]] = true
 				records = append(records, row)
 			}
 		}
