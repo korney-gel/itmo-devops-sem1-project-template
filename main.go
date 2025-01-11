@@ -8,12 +8,13 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	_ "github.com/lib/pq" // драйвер PostgreSQL
 	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+
+	_ "github.com/lib/pq" // драйвер PostgreSQL
 )
 
 const (
