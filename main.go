@@ -263,5 +263,7 @@ func handleGetPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	w.Header().Set("Content-Disposition", "attachment; filename=\"prices.zip\"")
 	w.Header().Set("Content-Type", "application/zip")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(zipBuf.Bytes())
+	if _, err := w.Write(zipBuf.Bytes()); err != nil {
+		log.Printf("Ошибка записи данных в ResponseWriter: %v", err)
+	}
 }
