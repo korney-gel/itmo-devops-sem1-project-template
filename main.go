@@ -70,7 +70,6 @@ func main() {
 	})
 
 	// Запуск сервера
-	fmt.Println("Сервер слушает порт 8080...")
 	log.Println("Сервер слушает на порту 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
