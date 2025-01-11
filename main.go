@@ -224,16 +224,25 @@ func handleGetPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		var price string // или использовать decimal/float
 		if err := rows.Scan(&productID, &createdAt, &productName, &category, &price); err != nil {
 			http.Error(w, "Ошибка чтения из БД", http.StatusInternalServerError)
+			log.Printf("Ошибка чтения строки из БД: %v", err)
 			return
 		}
 
 		record := []string{productID, createdAt, productName, category, price}
 		if err := csvWriter.Write(record); err != nil {
 			http.Error(w, "Ошибка записи строки CSV", http.StatusInternalServerError)
+			log.Printf("Ошибка записи строки CSV: %v", err)
 			return
 		}
 	}
 	csvWriter.Flush()
+
+	// Проверка ошибок, которые могли возникнуть во время итерации по rows
+	if err := rows.Err(); err != nil {
+		http.Error(w, "Ошибка обработки строк из БД", http.StatusInternalServerError)
+		log.Printf("Ошибка итерации по строкам из БД: %v", err)
+		return
+	}
 
 	// Формируем zip-архив в памяти
 	var zipBuf bytes.Buffer
