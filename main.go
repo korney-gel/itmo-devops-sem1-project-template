@@ -111,9 +111,9 @@ func handlePostPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	var totalItems int
-	var totalPrice float64
+	var records [][]string
 	categoriesMap := make(map[string]bool)
+	totalPrice := 0.0
 
 	// Ищем data.csv в архиве
 	for _, zipFile := range zipReader.File {
@@ -150,45 +150,51 @@ func handlePostPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 					continue
 				}
 
-				productID := row[0]
-				productName := row[1]
-				category := row[2]
-				price := row[3]
-				createdAt := row[4]
-
-				// Парсинг цены
-				priceFloat, err := strconv.ParseFloat(price, 64)
+				price, err := strconv.ParseFloat(row[3], 64)
 				if err != nil {
-					http.Error(w, "Некорректный формат цены: "+price, http.StatusBadRequest)
+					http.Error(w, "Некорректный формат цены: "+row[3], http.StatusBadRequest)
 					return
 				}
 
-				// Запись в БД
-				log.Printf("Вставка в БД: product_id=%s, created_at=%s, product_name=%s, category=%s, price=%f",
-					productID, createdAt, productName, category, priceFloat)
-
-				_, err = db.ExecContext(context.Background(),
-					`INSERT INTO prices (product_id, created_at, product_name, category, price)
-                     VALUES ($1, $2, $3, $4, $5)`,
-					productID, createdAt, productName, category, priceFloat)
-				if err != nil {
-					log.Printf("Ошибка записи в БД: %v", err)
-					http.Error(w, "Ошибка записи в БД", http.StatusInternalServerError)
-					return
-				}
-
-				totalItems++
-				totalPrice += priceFloat
-				categoriesMap[category] = true
+				totalPrice += price
+				categoriesMap[row[2]] = true
+				records = append(records, row)
 			}
 		}
 	}
 
+	// Создаем транзакцию
+	tx, err := db.BeginTx(context.Background(), nil)
+	if err != nil {
+		http.Error(w, "Ошибка создания транзакции", http.StatusInternalServerError)
+		return
+	}
+
+	// Записываем данные в базу
+	for _, record := range records {
+		_, err = tx.ExecContext(context.Background(),
+			`INSERT INTO prices (product_id, created_at, product_name, category, price)
+			 VALUES ($1, $2, $3, $4, $5)`,
+			record[0], record[4], record[1], record[2], record[3])
+		if err != nil {
+			tx.Rollback()
+			log.Printf("Ошибка записи в БД: %v", err)
+			http.Error(w, "Ошибка записи в БД", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// Фиксируем транзакцию
+	if err := tx.Commit(); err != nil {
+		http.Error(w, "Ошибка фиксации транзакции", http.StatusInternalServerError)
+		return
+	}
+
 	// Формируем ответ
 	resp := ImportResponse{
-		TotalItems:      totalItems,
+		TotalItems:      len(records),
 		TotalCategories: len(categoriesMap),
-		TotalPrice:      int(totalPrice), // Преобразуем в int для ответа
+		TotalPrice:      int(totalPrice),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
