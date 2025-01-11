@@ -184,6 +184,23 @@ func handlePostPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 	}
 
+	// Подсчитываем статистику
+	var totalItems int
+	var totalCategories int
+	var totalPrice float64
+
+	err = tx.QueryRowContext(context.Background(),
+		`SELECT COUNT(*) AS total_items, 
+                COUNT(DISTINCT category) AS total_categories, 
+                COALESCE(SUM(price), 0) AS total_price 
+         FROM prices`).Scan(&totalItems, &totalCategories, &totalPrice)
+	if err != nil {
+		tx.Rollback()
+		log.Printf("Ошибка подсчета статистики: %v", err)
+		http.Error(w, "Ошибка подсчета статистики", http.StatusInternalServerError)
+		return
+	}
+
 	// Фиксируем транзакцию
 	if err := tx.Commit(); err != nil {
 		http.Error(w, "Ошибка фиксации транзакции", http.StatusInternalServerError)
@@ -191,10 +208,10 @@ func handlePostPrices(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// Формируем ответ
-	resp := ImportResponse{
-		TotalItems:      len(records),
-		TotalCategories: len(categoriesMap),
-		TotalPrice:      int(totalPrice),
+	resp := map[string]interface{}{
+		"total_items":      totalItems,
+		"total_categories": totalCategories,
+		"total_price":      int(totalPrice),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
